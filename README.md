@@ -214,10 +214,7 @@ $$
 当存在矩阵 $C$ 使得 $A=BC$ 时，可以使用 Matrix Factorization（矩阵分解）机制分析隐私。论文给出的广义敏感度为：
 
 $$
-\operatorname{sens}_{\Pi}(C;B)
-=
-\max_{G\simeq_{\Pi}G'}
-\left\|C(G-G')\right\|_{B^\dagger B},
+\operatorname{sens}_{\Pi}(C;B)=\max_{G\simeq_{\Pi}G'}\left\|C(G-G')\right\|_{B^\dagger B},
 $$
 
 其中 $B^\dagger B$ 是 $B$ 行空间上的正交投影。该投影会删除攻击者无法从消息中恢复的梯度方向，因此通常能够得到比“所有消息均公开”的 LDP 分析更小的隐私损失。参与模式 $\Pi$ 则描述同一条样本在多个训练步骤中可能出现的位置。
@@ -249,11 +246,7 @@ $$
 论文在 DP-D-SGD 的 PNDP 实验中使用的核心量正是攻击者观测矩阵行空间的投影，即：
 
 $$
-\operatorname{sens}_{\Pi}^{2}
-\lesssim
-\max_{\pi\in\Pi}
-\sum_{s,t\in\pi}
-\left|(P_a)_{s,t}\right|.
+\operatorname{sens}_{\Pi}^{2}\lesssim\max_{\pi\in\Pi}\sum_{s,t\in\pi}\left|(P_a)_{s,t}\right|.
 $$
 
 当前实现沿用了这一核心思路，但没有直接使用元素绝对值之和作为最终界，而是针对每个攻击者、每个受保护节点和每种循环参与位置，进一步求解半正定规划，以计算对应的有效方差乘数。
@@ -351,10 +344,7 @@ $$
 LDP 假设攻击者可以观察全部通信信息，因此不利用网络局部可见性带来的隐私放大。当前实现不显式构造完整的全局消息矩阵，而是根据每轮内同一条样本出现的次数计算有效方差：
 
 $$
-v_{\mathrm{LDP}}
-=
-\max_{\text{offset}}
-\sum_{r=1}^{R}\frac{z_r^2}{T},
+v_{\mathrm{LDP}}=\max_{\text{offset}}\sum_{r=1}^{R}\frac{z_r^2}{T},
 $$
 
 其中 $z_r$ 是某个参与偏移下，该样本在第 $r$ 轮本地更新中的出现次数。
@@ -393,9 +383,7 @@ $$
 所有节点使用同一个噪声乘数：
 
 $$
-\sigma_{\mathrm{PNDP}}
-=
-\sigma_{\text{base}}\sqrt{v_{\mathrm{PNDP}}}.
+\sigma_{\mathrm{PNDP}}=\sigma_{\text{base}}\sqrt{v_{\mathrm{PNDP}}}.
 $$
 
 该模式参考了*Muffliato: Peer-to-Peer Privacy Amplification for Decentralized Optimization and Averaging*.，便于使用统一噪声进行训练，但它是当前代码定义的“最坏攻击者平均风险”聚合方式，其中隐含了越近的邻居越值得信任的假设，并不完全满足DP的保证。
@@ -405,9 +393,7 @@ $$
 在得到有效方差乘数 $v$ 后，代码先求解单位有效方差下满足目标 $(\varepsilon,\delta)$ 的基础噪声 $\sigma_{\text{base}}$，再进行缩放：
 
 $$
-\sigma_{\text{final}}
-=
-\sigma_{\text{base}}\sqrt{v}.
+\sigma_{\text{final}}=\sigma_{\text{base}}\sqrt{v}.
 $$
 
 当前实现支持两种会计框架：
