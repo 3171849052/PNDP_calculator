@@ -473,7 +473,7 @@ round,mean_acc,max_acc,min_acc,consensus_gap,avg_loss
 
 ![不同隐私预算下的噪声乘子](./noise_multiplier.png)
 
-在图示配置下，随着 $\}varepsilon$ 增大，达到目标隐私预算所需的噪声乘子整体下降。PNDP 利用了攻击者局部观察和网络混合带来的隐私放大，因此所需噪声低于较保守的 LDP。PNDP_strict 按节点最坏攻击者进行校准，通常比平均化的 PNDP 更保守。
+在图示配置下，随着 $\varepsilon$ 增大，达到目标隐私预算所需的噪声乘子整体下降。PNDP 利用了攻击者局部观察和网络混合带来的隐私放大，因此所需噪声低于较保守的 LDP。PNDP_strict 按节点最坏攻击者进行校准，通常比平均化的 PNDP 更保守。
 
 ### 不同方法的平均准确率
 
