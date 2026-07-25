@@ -1,7 +1,9 @@
 networkx
 numpy
 tqdm
-opt-einsum
-datasets
-peft
-transformers
+matplotlib
+torch
+torchvision
+opacus
+pytest
+cvxpy

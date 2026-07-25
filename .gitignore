@@ -1,3 +1,5 @@
 .opencode/
-exps/
+data/
+.pytest_cache/
+__pycache__/
 .opencode
