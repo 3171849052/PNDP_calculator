@@ -1,3 +1,9 @@
+
+
+<p align="right">
+  <a href="./README_EN.md">English</a>
+</p>
+
 # PNDP Calculator：去中心化学习隐私噪声乘子计算工具
 
 本项目提供一个面向去中心化学习（Decentralized Learning，DL）的差分隐私（Differential Privacy，DP）噪声乘子计算器，并给出基于 MNIST 的去中心化训练示例。
