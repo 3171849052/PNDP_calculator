@@ -246,7 +246,10 @@ $$
 论文在 DP-D-SGD 的 PNDP 实验中使用的核心量正是攻击者观测矩阵行空间的投影，即：
 
 $$
-\operatorname{sens}_{\Pi}^{2}\lesssim\max_{\pi\in\Pi}\sum_{s,t\in\pi}\left|(P_a)_{s,t}\right|.
+\mathrm{sens}_{\Pi}(C;B)
+=
+\max_{G\simeq_{\Pi}G'}
+\left|C(G-G')\right|_{B^\dagger B},
 $$
 
 当前实现沿用了这一核心思路，但没有直接使用元素绝对值之和作为最终界，而是针对每个攻击者、每个受保护节点和每种循环参与位置，进一步求解半正定规划，以计算对应的有效方差乘数。
@@ -284,9 +287,9 @@ $$
 
 $$
 \begin{aligned}
-\max_X\quad & \operatorname{tr}(HX),\\
+\max_X\quad & \mathrm{tr}(HX),\\
 \text{s.t.}\quad & X\succeq 0,\\
-& \operatorname{diag}(X)\leq 1.
+& \mathrm{diag}(X)\leq 1.
 \end{aligned}
 $$
 
