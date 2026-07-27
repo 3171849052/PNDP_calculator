@@ -1,9 +1,5 @@
 <div align="right">
 
-[中文](README.md)
-
-</div>
-
 # PNDP Calculator: A Privacy Noise Multiplier Calculator for Decentralized Learning
 
 This project provides a differential privacy (DP) noise multiplier calculator for decentralized learning (DL), together with a decentralized training example based on MNIST.
@@ -175,23 +171,23 @@ PNDPAccountant(
 )
 ```
 
-| Parameter | Description |
-| --- | --- |
-| `N_samples` | Number of local samples held by each node, not the total number of samples across all nodes |
-| `batch_size` | Logical batch size |
-| `T_local_steps` | Number of local update steps per round |
-| `R_rounds` | Total number of communication rounds |
-| `K_gossip` | Number of Gossip communication or aggregation operations per round |
+| Parameter         | Description                                                                                 |
+| ----------------- | ------------------------------------------------------------------------------------------- |
+| `N_samples`     | Number of local samples held by each node, not the total number of samples across all nodes |
+| `batch_size`    | Logical batch size                                                                          |
+| `T_local_steps` | Number of local update steps per round                                                      |
+| `R_rounds`      | Total number of communication rounds                                                        |
+| `K_gossip`      | Number of Gossip communication or aggregation operations per round                          |
 
 ---
 
 ## Supported Algorithms and Return Values
 
-| `algorithm` | Graph Required | Return Value | Meaning in the Current Implementation |
-| --- | ---: | --- | --- |
-| `LDP` | No | `(noise_multiplier, metric)` | Uses the standard LDP effective variance |
-| `PNDP` | Yes | `(noise_multiplier, metric)` | Computes the average effective variance over other nodes for each attacker and then selects the worst-case attacker |
-| `PNDP_strict` | Yes | `{node_name: noise_multiplier}` | Selects the worst-case attacker for each victim node and returns node-specific results |
+| `algorithm`   | Graph Required | Return Value                      | Meaning in the Current Implementation                                                                               |
+| --------------- | -------------: | --------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `LDP`         |             No | `(noise_multiplier, metric)`    | Uses the standard LDP effective variance                                                                            |
+| `PNDP`        |            Yes | `(noise_multiplier, metric)`    | Computes the average effective variance over other nodes for each attacker and then selects the worst-case attacker |
+| `PNDP_strict` |            Yes | `{node_name: noise_multiplier}` | Selects the worst-case attacker for each victim node and returns node-specific results                              |
 
 The meaning of `metric` depends on `framework`:
 
@@ -223,7 +219,7 @@ Here:
 When a matrix $C$ exists such that $A=BC$, privacy can be analyzed using a Matrix Factorization mechanism. The generalized sensitivity defined in the paper is:
 
 $$
-\operatorname{sens}_{\Pi}(C;B)=\max_{G\simeq_{\Pi}G'}\left\|C(G-G')\right\|_{B^\dagger B},
+\mathrm{sens}_{\Pi}(C;B)=\max_{G\simeq_{\Pi}G'}\left|C(G-G')\right|_{B^\dagger B}
 $$
 
 where $B^\dagger B$ is the orthogonal projection onto the row space of $B$. This projection removes gradient directions that the attacker cannot recover from the observed messages. As a result, it can often produce a smaller privacy loss than the LDP analysis, which assumes that all messages are publicly observable.
@@ -232,11 +228,11 @@ The participation pattern $\Pi$ describes the training steps at which the same s
 
 Under different trust models, the attacker has access to different observations:
 
-| Trust Model | Attacker Capabilities in the Paper |
-| --- | --- |
-| LDP | Assumes that all communication messages in the network can be observed by the attacker |
-| PNDP | The attacker is a node in the network that only observes messages it sends or receives and knows its own gradients and noise |
-| SecLDP | In addition to communication messages, conditional privacy guarantees are constructed using secret noise known to the attacker |
+| Trust Model | Attacker Capabilities in the Paper                                                                                             |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| LDP         | Assumes that all communication messages in the network can be observed by the attacker                                         |
+| PNDP        | The attacker is a node in the network that only observes messages it sends or receives and knows its own gradients and noise   |
+| SecLDP      | In addition to communication messages, conditional privacy guarantees are constructed using secret noise known to the attacker |
 
 The current implementation only supports the first two trust models and does not implement SecLDP.
 
@@ -257,10 +253,7 @@ $$
 The key quantity used in the paper's PNDP experiments for DP-D-SGD is the projection onto the row space of the attacker's observation matrix:
 
 $$
-\mathrm{sens}_{\Pi}(C;B)
-=
-\max_{G\simeq_{\Pi}G'}
-\left\|C(G-G')\right\|_{B^\dagger B}.
+\mathrm{sens}_{\Pi}(C;B)=\max_{G\simeq_{\Pi}G'}\left|C(G-G')\right|_{B^\dagger B}
 $$
 
 The current implementation follows this central idea. However, instead of directly using an element-wise absolute-sum bound as the final result, it solves a semidefinite program for every attacker, victim node, and cyclic participation position to compute the corresponding effective variance multiplier.
@@ -429,26 +422,26 @@ The paper mainly develops its unified theory using GDP and notes that GDP can be
 
 `train_example_mnist.py` reads its main configuration from environment variables.
 
-| Environment Variable | Default Value | Description |
-| --- | ---: | --- |
-| `DATASET` | `MNIST` | The current implementation only supports MNIST |
-| `GRAPH` | `florentine_families` | Name of the graph used by the current implementation |
-| `BATCH_SIZE` | `256` | Logical batch size |
-| `MAX_PHYSICAL_BATCH_SIZE` | `256` | Maximum physical batch size used by Opacus |
-| `T_LOCAL_STEPS` | `20` | Number of local update steps per round |
-| `R_ROUNDS` | `20` | Number of training rounds |
-| `K_GOSSIP` | `1` | Number of Gossip operations per round used by the accountant |
-| `EPSILON` | `3.0` | Target privacy budget $\varepsilon$ |
-| `DELTA` | `1e-5` | Target privacy budget $\delta$ |
-| `CLIP_NORM` | `1` | Gradient clipping threshold |
-| `LR` | `1e-3` | Learning rate |
-| `GPU` | `0` | GPU selected through `CUDA_VISIBLE_DEVICES` |
-| `FRAMEWORK` | `GDP` | `RDP` or `GDP` |
-| `ALGORITHM` | `PNDP` | `LDP`, `PNDP`, or `PNDP_strict` |
-| `ENABLE_PRIVACY` | `True` | Whether to enable private training through Opacus |
-| `SET_NM` | `None` | Whether to manually specify a unified noise multiplier |
-| `CACHE_NOISE` | `True` | Whether to load a previously computed noise multiplier from cache |
-| `OUT_DIR` | Automatically generated | Experiment output directory |
+| Environment Variable        |           Default Value | Description                                                       |
+| --------------------------- | ----------------------: | ----------------------------------------------------------------- |
+| `DATASET`                 |               `MNIST` | The current implementation only supports MNIST                    |
+| `GRAPH`                   | `florentine_families` | Name of the graph used by the current implementation              |
+| `BATCH_SIZE`              |                 `256` | Logical batch size                                                |
+| `MAX_PHYSICAL_BATCH_SIZE` |                 `256` | Maximum physical batch size used by Opacus                        |
+| `T_LOCAL_STEPS`           |                  `20` | Number of local update steps per round                            |
+| `R_ROUNDS`                |                  `20` | Number of training rounds                                         |
+| `K_GOSSIP`                |                   `1` | Number of Gossip operations per round used by the accountant      |
+| `EPSILON`                 |                 `3.0` | Target privacy budget$\varepsilon$                              |
+| `DELTA`                   |                `1e-5` | Target privacy budget$\delta$                                   |
+| `CLIP_NORM`               |                   `1` | Gradient clipping threshold                                       |
+| `LR`                      |                `1e-3` | Learning rate                                                     |
+| `GPU`                     |                   `0` | GPU selected through`CUDA_VISIBLE_DEVICES`                      |
+| `FRAMEWORK`               |                 `GDP` | `RDP` or `GDP`                                                |
+| `ALGORITHM`               |                `PNDP` | `LDP`, `PNDP`, or `PNDP_strict`                             |
+| `ENABLE_PRIVACY`          |                `True` | Whether to enable private training through Opacus                 |
+| `SET_NM`                  |                `None` | Whether to manually specify a unified noise multiplier            |
+| `CACHE_NOISE`             |                `True` | Whether to load a previously computed noise multiplier from cache |
+| `OUT_DIR`                 | Automatically generated | Experiment output directory                                       |
 
 ---
 
@@ -499,12 +492,12 @@ PNDP uses a lower noise multiplier and therefore achieves higher accuracy. The c
 
 ## References
 
-> Aurelien Bellet, Edwige Cyffers, Davide Frey, Romaric Gaudel, Dimitri Lereverend, François Taïani.  
-> *Unified Privacy Guarantees for Decentralized Learning via Matrix Factorization*. ICLR 2026.  
+> Aurelien Bellet, Edwige Cyffers, Davide Frey, Romaric Gaudel, Dimitri Lereverend, François Taïani.
+> *Unified Privacy Guarantees for Decentralized Learning via Matrix Factorization*. ICLR 2026.
 > arXiv:2510.17480.
 
-> Edwige Cyffers, Mathieu Even, Aurélien Bellet, Laurent Massoulié.  
-> *Muffliato: Peer-to-Peer Privacy Amplification for Decentralized Optimization and Averaging*. NeurIPS 2022.  
+> Edwige Cyffers, Mathieu Even, Aurélien Bellet, Laurent Massoulié.
+> *Muffliato: Peer-to-Peer Privacy Amplification for Decentralized Optimization and Averaging*. NeurIPS 2022.
 > arXiv:2206.05091.
 
 ---

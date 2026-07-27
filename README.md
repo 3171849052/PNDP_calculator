@@ -1,5 +1,3 @@
-
-
 <p align="right">
   <a href="./README_EN.md">English</a>
 </p>
@@ -220,7 +218,7 @@ $$
 当存在矩阵 $C$ 使得 $A=BC$ 时，可以使用 Matrix Factorization（矩阵分解）机制分析隐私。论文给出的广义敏感度为：
 
 $$
-\operatorname{sens}_{\Pi}(C;B)=\max_{G\simeq_{\Pi}G'}\left\|C(G-G')\right\|_{B^\dagger B},
+\mathrm{sens}_{\Pi}(C;B)=\max_{G\simeq_{\Pi}G'}\left|C(G-G')\right|_{B^\dagger B}
 $$
 
 其中 $B^\dagger B$ 是 $B$ 行空间上的正交投影。该投影会删除攻击者无法从消息中恢复的梯度方向，因此通常能够得到比“所有消息均公开”的 LDP 分析更小的隐私损失。参与模式 $\Pi$ 则描述同一条样本在多个训练步骤中可能出现的位置。
@@ -252,10 +250,7 @@ $$
 论文在 DP-D-SGD 的 PNDP 实验中使用的核心量正是攻击者观测矩阵行空间的投影，即：
 
 $$
-\mathrm{sens}_{\Pi}(C;B)
-=
-\max_{G\simeq_{\Pi}G'}
-\left|C(G-G')\right|_{B^\dagger B},
+\mathrm{sens}_{\Pi}(C;B)=\max_{G\simeq_{\Pi}G'}\left|C(G-G')\right|_{B^\dagger B}
 $$
 
 当前实现沿用了这一核心思路，但没有直接使用元素绝对值之和作为最终界，而是针对每个攻击者、每个受保护节点和每种循环参与位置，进一步求解半正定规划，以计算对应的有效方差乘数。
