@@ -1,4 +1,6 @@
-<div align="right">
+<p align="right">
+  <a href="./README.md">中文</a>
+</p>
 
 # PNDP Calculator: A Privacy Noise Multiplier Calculator for Decentralized Learning
 
